@@ -5,12 +5,13 @@
   "dependencies": {
     "@types/jest": "24.0.12",
     "@types/node": "11.13.8",
-    "@types/react": "16.8.15",
+    "@types/react": "^16.8.15",
     "@types/react-dom": "16.8.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
-    "typescript": "3.4.5"
+    "typescript": "3.4.5",
+    "zingtouch": "^1.0.6"
   },
   "scripts": {
     "start": "react-scripts start",
