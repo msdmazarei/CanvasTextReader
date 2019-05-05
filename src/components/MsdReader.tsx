@@ -8,6 +8,7 @@ import { IGeoSize } from '../helpers/IGeoSize';
 import { IReaderStyle } from '../helpers/IReaderStyle';
 import { TextHelpers } from '../helpers/text_helpers';
 import { IFormat } from '../helpers/IFormat';
+import { Font, loadSync, load } from 'opentype.js'
 
 interface IProps {
     zoom?: number
@@ -36,8 +37,8 @@ interface IState {
 export class MsdReader extends Component<IProps, IState> {
     canvasref: any;
     canvasCTX: any;
-    defaultFont: string = "Arial";
-    defaultFontSize: string = "18px";
+    defaultFont: string = "Far_Mitra";
+    defaultFontSize: string = "16";
 
     constructor(props: IProps) {
         super(props);
@@ -280,7 +281,10 @@ export class MsdReader extends Component<IProps, IState> {
         return { max_height: max_height, words_bbox: words_bbox }
     }
     async componentDidMount() {
+        await fontMetrics.load_system_fonts()
+
         debugger;
+
         const canvasNode = this.canvasref.current;
         const canvasParent = canvasNode.parentNode;
 
@@ -296,6 +300,19 @@ export class MsdReader extends Component<IProps, IState> {
         // this.canvas_render();
         const new_state = {};
         await this.render_next_page();
+        // load("/Far_Mitra.ttf", (err, font) => {
+        //     debugger;
+        //     console.log(err);
+        //     console.log(font);
+        //     const txt = "سلام"
+        //     const path = font.getPath(txt, 0, 0, 72)
+        //     const bbox = path.getBoundingBox()
+        //     const width = bbox.x2-bbox.x1
+        //     const height = bbox.y2- bbox.y1
+        //     font.draw(ctx, txt, width,height,72)
+        //     debugger;
+        // })
+
 
 
 

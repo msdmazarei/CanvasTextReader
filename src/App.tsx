@@ -6,6 +6,7 @@ import { MsdReader } from './components/MsdReader';
 import { fontMetrics } from './utils/fontMetrics';
 import { EDirection, ETextType } from './helpers/IBook';
 import { SimpleSerialRendererItemProvider } from './helpers/SimpleSerialRendererItemProvider';
+import {Font} from 'opentype.js'
 const App: React.FC = () => {
   const txt = `شیراز یکی از شهرهای بزرگ ایران و کلان‌شهر زیبای این کشور و مرکز استان فارس است.
   جمعیت شیراز در سال ۱۳۹۵ خورشیدی بالغ بر ۱٬۵۶۵٬۵۷۲ تن بوده که این رقم با احتساب جمعیت ساکن در حومهٔ شهر به ۱٬۸۶۹٬۰۰۱ تن می‌رسد است 
@@ -63,14 +64,14 @@ const App: React.FC = () => {
           top: 5
 
         }}
-        btwLineSpace={1}
+        btwLineSpace={10}
         readerStyle={
           {
             backgroundColor: { red: 255, green: 255, blue: 255, alpha: 1 },
             brightness: 1,
             color: { red: 0, green: 0, blue: 0, alpha: 1 },
             fontFamily: "Tahoma",
-            fontSize: "26px"
+            fontSize: "16"
           }} >
       </MsdReader>
       <button onClick={onNextPageButton.bind(this)}>Next Page</button>
