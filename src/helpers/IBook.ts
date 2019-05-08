@@ -22,6 +22,7 @@ export interface ITextFormat {
     color?: number
     zoomable?: boolean
     direction?: EDirection
+    selected?: boolean
 }
 export interface IText<T> {
     type: ETextType
@@ -31,7 +32,7 @@ export interface IText<T> {
     paragraph: IParagraph
     text_group?: ITextGroup
     index_in_group?: number
-
+    
 }
 export interface ITextGroup {
     type: ETextType //only can be TXTGROUP

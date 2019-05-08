@@ -5,7 +5,7 @@ import { load, Font, BoundingBox } from 'opentype.js';
 export class fontMetrics {
     static tempCanvasContext: any = null;
     static dummy_elemnt: any = null;
-    static cache: Map<string, ImageData> = new Map();
+    static cache: Map<string, { image: ImageData, base_line: number }> = new Map();
     static cache_size: number = 1000;
     static loaded_font: Map<string, Font> = new Map();
     static fontBboxCache: Map<string, BoundingBox> = new Map()
@@ -17,11 +17,15 @@ export class fontMetrics {
         const u = format.underlined ? "U" : "u"
         const z = format.zoomable ? "Z" : "z"
         const c = format.color ? format.color : "c"
-        return `${b}${i}${u}${z}${c}`
+        const s = format.selected ? "S" : "s"
+        return `${b}${i}${u}${z}${c}${s}`
     }
 
 
+
+
     static async load_font(fontname): Promise<Font> {
+        debugger;
         return new Promise((res, rej) => {
             load(`/${fontname}`, (err, font) => {
                 if (err) {
@@ -53,7 +57,7 @@ export class fontMetrics {
         const fontname = format.fontFamily
         const font: Font = fontMetrics.get_font(fontname)
 
-        const fontSize = parseInt(format.fontSize || "18")
+        const fontSize = format.fontSize || 18
         const bbox_rtn = font.getPath(text, 0, 0, fontSize).getBoundingBox()
         fontMetrics.fontBboxCache.set(cache_key, bbox_rtn)
         if (fontMetrics.fontBboxCache.size > fontMetrics.fontBboxCahce_size) {
@@ -99,7 +103,7 @@ export class fontMetrics {
 
 
 
-    static get_text_image(format: IFormat, text: string): ImageData {
+    static get_text_image(format: IFormat, text: string): { image: ImageData, base_line: number } {
         const { fontFamily, fontSize } = format
         const formatStr = fontMetrics.format2str(format)
         const cache_key = `${fontFamily}-${fontSize}-${formatStr}-${text}`
@@ -124,15 +128,24 @@ export class fontMetrics {
 
         const ctx = fontMetrics.tempCanvasContext
         ctx.clearRect(0, 0, canvasWidth, canvasHeight)
-        debugger;
         const font = fontMetrics.get_font(fontFamily)
-        const iFontSize = parseInt(fontSize||"18")
-       
-        const textPath = font.getPath(text, canvasWidth/2, canvasHeight/2, iFontSize)
-        textPath.draw(ctx)
+        const iFontSize = (fontSize || 18)
+
+        const textPath = font.getPath(text, canvasWidth / 2, canvasHeight / 2, iFontSize)
         const tbb = textPath.getBoundingBox()
-        console.log("word:",text,"tbb:",tbb)
-        const rtn1 = ctx.getImageData(Math.floor(tbb.x1), Math.floor(tbb.y1),Math.ceil(tbb.x2-tbb.x1), Math.ceil(tbb.y2-tbb.y1))
+        const fbb = { x: Math.floor(tbb.x1), y: Math.floor(tbb.y1), w: Math.ceil(tbb.x2 - tbb.x1), h: Math.ceil(tbb.y2 - tbb.y1) }
+        if (format.selected) {
+            ctx.rect(fbb.x, fbb.y, fbb.w, fbb.h);
+            ctx.fillStyle = "blue";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.fillStyle = "white"
+            ctx.strokeStyle = "white"
+            ctx.stroke();
+        }
+        textPath.draw(ctx)
+        const base_line = canvasWidth / 2 - tbb.y1
+        const rtn1 = { image: ctx.getImageData(fbb.x, fbb.y, fbb.w, fbb.h), base_line: base_line }
         fontMetrics.cache.set(cache_key, rtn1)
         if (fontMetrics.cache.size > fontMetrics.cache_size) {
             const first_key = fontMetrics.cache.keys().next().value
@@ -144,18 +157,18 @@ export class fontMetrics {
 
 
 
-        ctx.textBaseline = 'top'; // important!
-        ctx.font = `${fontSize} ${fontFamily}`
-        const txt_width = ctx.measureText(text).width
-        const txt_height = fontMetrics.get_text_height(format, text);
-        ctx.fillText(text, 0, 0);
-        const rtn = ctx.getImageData(0, 0, txt_width, txt_height)
-        fontMetrics.cache.set(cache_key, rtn)
-        if (fontMetrics.cache.size > fontMetrics.cache_size) {
-            const first_key = fontMetrics.cache.keys().next().value
-            fontMetrics.cache.delete(first_key)
-        }
-        return rtn;
+        // ctx.textBaseline = 'top'; // important!
+        // ctx.font = `${fontSize} ${fontFamily}`
+        // const txt_width = ctx.measureText(text).width
+        // const txt_height = fontMetrics.get_text_height(format, text);
+        // ctx.fillText(text, 0, 0);
+        // const rtn = ctx.getImageData(0, 0, txt_width, txt_height)
+        // fontMetrics.cache.set(cache_key, rtn)
+        // if (fontMetrics.cache.size > fontMetrics.cache_size) {
+        //     const first_key = fontMetrics.cache.keys().next().value
+        //     fontMetrics.cache.delete(first_key)
+        // }
+        // return rtn;
 
     }
 }

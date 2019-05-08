@@ -29,7 +29,7 @@ export class TextHelpers {
             case ETextType.PUNCTUATION:
             case ETextType.TXT:
                 const tstr = t as IText<string>
-                const d = fontMetrics.get_text_image(textFormat, tstr.get_content())
+                const d = fontMetrics.get_text_image(textFormat, tstr.get_content()).image
                 return { width: d.width, height: d.height }
         }
     }

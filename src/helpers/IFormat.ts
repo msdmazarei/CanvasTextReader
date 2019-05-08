@@ -8,8 +8,9 @@ export interface IFormat {
     underlined?: boolean
     color?: IColor
     fontFamily: string
-    fontSize: string
+    fontSize: number
     backgroundColor: IColor
     brightness: number
     zoomable: boolean
+    selected?: boolean
 }
